@@ -9,7 +9,7 @@ This project was developed as part of a Python course project to demonstrate API
 
 Convert between 160+ world currencies
 
-Uses real-time exchange rates
+Uses real-time exchange rates        
 
 Clean Bootstrap UI
 
@@ -114,3 +114,23 @@ Dynamic templates using Jinja2
 Frontend design using Bootstrap
 
 Handling real-time financial data
+
+🔮 Future Improvements
+
+Possible upgrades for this project:
+
+Currency search dropdown
+
+Swap currency button
+
+Historical exchange rate charts
+
+Travel expense calculator
+
+Auto-refresh live exchange rates
+
+Country flags for currencies
+
+📜 License
+
+This project is created for educational purposes.
