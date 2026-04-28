@@ -8,7 +8,7 @@ app = Flask(__name__)
 API_BASE = "https://open.er-api.com/v6/latest"
 
 # Top currencies shown in the live rate cards
-TOP_CURRENCIES = ["EUR", "INR", "JPY", "AUD", "GBP", "CAD", "CHF", "CNY"]
+TOP_CURRENCIES = ["EUR", "USD", "JPY", "AUD", "GBP", "CAD", "CHF", "CNY"]
 
 
 def fetch_rates(base="USD"):
@@ -43,7 +43,7 @@ def index():
     amount = 1
 
     # Fetch base rates for building the currency list and live rate cards
-    rates, fetch_error = fetch_rates("USD")
+    rates, fetch_error = fetch_rates("INR")
 
     if fetch_error:
         error = fetch_error
