@@ -1,193 +1,241 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Currency Converter</title>
 
-<title>Currency Converter</title>
-
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
-
-<style>
-
-body{
-min-height:100vh;
-display:flex;
-align-items:center;
-justify-content:center;
-background: linear-gradient(135deg,#201930,#6B2EFF,#1A1333);
-font-family: system-ui;
-}
-.convert-btn{
-height:52px;
-border-radius:12px;
-font-size:18px;
-background:#201930;
-color:white;
-border:none;
-}
-
-.convert-btn:hover{
-background:#2c2450;
-}
-
-.converter-card{
-max-width:520px;
-width:100%;
-border-radius:18px;
-box-shadow:0 10px 30px rgba(0,0,0,0.15);
-}
-
-.amount-input{
-height:55px;
-font-size:20px;
-border-radius:12px;
-}
-
-.currency-box{
-border:1px solid #e9ecef;
-border-radius:12px;
-padding:12px;
-background:#fff;
-}
-
-.swap-btn{
-width:45px;
-height:45px;
-border-radius:50%;
-display:flex;
-align-items:center;
-justify-content:center;
-}
-
-.result-box{
-background:#ecfdf5;
-border-radius:12px;
-padding:18px;
-}
-
-.convert-btn{
-height:52px;
-border-radius:12px;
-font-size:18px;
-}
-
-.rate-card{
-border-radius:14px;
-box-shadow:0 4px 15px rgba(0,0,0,0.08);
-}
-
-.flag{
-font-size:20px;
-}
-
-</style>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+  <!-- Select2 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet">
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 
 <body>
+<div class="container py-4">
 
-<div class="container py-5">
+  <!-- ── Page Header ─────────────────────────────────────────────── -->
+  <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+    <h3 class="fw-bold text-white mb-0">⚡ Currency Converter</h3>
+    <div class="form-check form-switch mb-0 d-flex align-items-center gap-2">
+      <input class="form-check-input" type="checkbox" id="darkModeToggle" role="switch" style="width:2.5em;height:1.4em;">
+      <label class="form-check-label text-white fw-semibold" for="darkModeToggle">
+        <i class="bi bi-moon-stars-fill"></i> Dark Mode
+      </label>
+    </div>
+  </div>
 
-<div class="card converter-card mx-auto p-4">
+  <!-- ── Converter Card ──────────────────────────────────────────── -->
+  <div class="card converter-card mx-auto p-4 mb-4">
 
-<h3 class="text-center fw-bold mb-4">
-⚡ Currency Converter
-</h3>
+    <!-- Error / API failure alert -->
+    {% if error %}
+    <div class="alert alert-danger d-flex align-items-start gap-2 mb-3" role="alert">
+      <i class="bi bi-exclamation-triangle-fill fs-5 mt-1 flex-shrink-0"></i>
+      <span>{{ error }}</span>
+    </div>
+    {% endif %}
 
-<form method="POST">
+    <form method="POST" id="converterForm">
 
-<div class="mb-3">
-<label class="form-label fw-semibold">Amount</label>
-<input type="number" name="amount" class="form-control amount-input" value="1" required>
-</div>
+      <!-- Amount -->
+      <div class="mb-3">
+        <label class="form-label fw-semibold" for="amountInput">Amount</label>
+        <input type="number" name="amount" id="amountInput"
+               class="form-control amount-input"
+               value="{{ amount }}" min="0" step="any" required>
+      </div>
 
-<div class="row align-items-center g-2 mb-4">
+      <!-- From / Swap / To -->
+      <div class="row align-items-end g-2 mb-4">
+        <div class="col-5">
+          <label class="form-label fw-semibold small" for="fromCurrency">From</label>
+          <select class="form-select currency-select" name="from_currency" id="fromCurrency">
+            {% for currency in currency_list %}
+            <option value="{{ currency }}" {% if currency == from_currency %}selected{% endif %}>{{ currency }}</option>
+            {% endfor %}
+          </select>
+        </div>
 
-<div class="col-5">
-<select class="form-select" name="from_currency">
+        <div class="col-2 text-center pb-1">
+          <button type="button" id="swapBtn" class="btn btn-outline-secondary swap-btn" title="Swap currencies">
+            <i class="bi bi-arrow-left-right"></i>
+          </button>
+        </div>
 
-{% for currency in currency_list %}
+        <div class="col-5">
+          <label class="form-label fw-semibold small" for="toCurrency">To</label>
+          <select class="form-select currency-select" name="to_currency" id="toCurrency">
+            {% for currency in currency_list %}
+            <option value="{{ currency }}" {% if currency == to_currency %}selected{% endif %}>{{ currency }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
 
-<option value="{{ currency }}"
-{% if currency == from_currency %} selected {% endif %}>
-{{ currency }}
-</option>
+      <button type="submit" class="btn btn-success convert-btn w-100 mb-3">
+        <i class="bi bi-arrow-repeat me-2"></i>Convert Now
+      </button>
 
-{% endfor %}
+    </form>
 
-</select>
-</div>
+    <!-- ── Conversion Result ──────────────────────────────────── -->
+    {% if result %}
+    <div class="result-box text-center" id="resultBox">
+      <div class="d-flex justify-content-center align-items-center gap-3 mb-2">
+        <div class="d-flex align-items-center gap-1">
+          <span class="result-flag" data-currency="{{ from_currency }}"></span>
+          <span class="fw-semibold">{{ from_currency }}</span>
+        </div>
+        <i class="bi bi-arrow-right text-success fs-5"></i>
+        <div class="d-flex align-items-center gap-1">
+          <span class="result-flag" data-currency="{{ to_currency }}"></span>
+          <span class="fw-semibold">{{ to_currency }}</span>
+        </div>
+      </div>
+      <div class="text-muted small mb-2">1 {{ from_currency }} = {{ rate }} {{ to_currency }}</div>
+      <h2 class="fw-bold result-amount">{{ amount }} {{ from_currency }} = {{ result }} {{ to_currency }}</h2>
+    </div>
 
-<div class="col-2 text-center">
-<i class="bi bi-arrow-left-right"></i>
-</div>
+    <!-- Hidden data used by JS to save this conversion to localStorage history -->
+    <div id="newConversion"
+         data-amount="{{ amount }}"
+         data-from="{{ from_currency }}"
+         data-to="{{ to_currency }}"
+         data-result="{{ result }}"
+         style="display:none"></div>
+    {% endif %}
 
-<div class="col-5">
-<select class="form-select" name="to_currency">
+  </div><!-- /converter-card -->
 
-{% for currency in currency_list %}
+  <!-- ── Conversion History ──────────────────────────────────────── -->
+  <div class="card p-4 mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h5 class="fw-bold mb-0"><i class="bi bi-clock-history me-2 text-success"></i>Recent Conversions</h5>
+      <button type="button" class="btn btn-sm btn-outline-danger" id="clearHistoryBtn">
+        <i class="bi bi-trash me-1"></i>Clear
+      </button>
+    </div>
+    <div id="historyContainer">
+      <p class="text-muted small mb-0" id="noHistoryMsg">No conversions yet — try converting a currency above!</p>
+    </div>
+  </div>
 
-<option value="{{ currency }}"
-{% if currency == to_currency %} selected {% endif %}>
-{{ currency }}
-</option>
+  <!-- ── Trip Expense Calculator ────────────────────────────────── -->
+  <div class="card p-4 mb-4">
+    <h5 class="fw-bold mb-3"><i class="bi bi-airplane me-2 text-success"></i>Trip Expense Calculator</h5>
 
-{% endfor %}
+    <!-- Expense inputs -->
+    <div class="row g-3 mb-3">
+      <div class="col-6 col-md-3">
+        <label class="form-label fw-semibold small">🏨 Hotel</label>
+        <input type="number" id="hotelExpense" class="form-control trip-input" placeholder="0.00" min="0" step="any">
+      </div>
+      <div class="col-6 col-md-3">
+        <label class="form-label fw-semibold small">🍽️ Food</label>
+        <input type="number" id="foodExpense" class="form-control trip-input" placeholder="0.00" min="0" step="any">
+      </div>
+      <div class="col-6 col-md-3">
+        <label class="form-label fw-semibold small">🚗 Transport</label>
+        <input type="number" id="transportExpense" class="form-control trip-input" placeholder="0.00" min="0" step="any">
+      </div>
+      <div class="col-6 col-md-3">
+        <label class="form-label fw-semibold small">🛍️ Shopping</label>
+        <input type="number" id="shoppingExpense" class="form-control trip-input" placeholder="0.00" min="0" step="any">
+      </div>
+    </div>
 
-</select>
-</div>
+    <!-- Currency selectors + calculate button -->
+    <div class="row g-3 align-items-end">
+      <div class="col-md-4">
+        <label class="form-label fw-semibold small">From Currency</label>
+        <select class="form-select currency-select" id="tripFrom">
+          {% for currency in currency_list %}
+          <option value="{{ currency }}" {% if currency == from_currency %}selected{% endif %}>{{ currency }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-4">
+        <label class="form-label fw-semibold small">To Currency</label>
+        <select class="form-select currency-select" id="tripTo">
+          {% for currency in currency_list %}
+          <option value="{{ currency }}" {% if currency == to_currency %}selected{% endif %}>{{ currency }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-4">
+        <button type="button" id="calcTripBtn" class="btn btn-success convert-btn w-100">
+          <i class="bi bi-calculator me-2"></i>Calculate Total
+        </button>
+      </div>
+    </div>
 
-</div>
+    <!-- Trip result -->
+    <div id="tripResult" class="mt-3" style="display:none">
+      <div class="result-box">
+        <div class="row text-center g-2 mb-2">
+          <div class="col-6 col-md-3">
+            <div class="text-muted small">🏨 Hotel</div>
+            <div class="fw-semibold" id="hotelDisplay">-</div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="text-muted small">🍽️ Food</div>
+            <div class="fw-semibold" id="foodDisplay">-</div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="text-muted small">🚗 Transport</div>
+            <div class="fw-semibold" id="transportDisplay">-</div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="text-muted small">🛍️ Shopping</div>
+            <div class="fw-semibold" id="shoppingDisplay">-</div>
+          </div>
+        </div>
+        <hr class="my-2">
+        <div class="text-muted small mb-1">Total</div>
+        <div class="fw-semibold" id="tripTotalOrig"></div>
+        <h4 class="fw-bold result-amount mt-1">= <span id="tripConverted"></span></h4>
+      </div>
+    </div>
 
-<button type="submit" class="btn btn-success convert-btn:hover convert-btn w-100 mb-4">
-Convert Now
-</button>
+    <!-- Trip error -->
+    <div id="tripError" class="alert alert-danger d-flex align-items-center gap-2 mt-3" style="display:none">
+      <i class="bi bi-exclamation-triangle-fill flex-shrink-0"></i>
+      <span id="tripErrorMsg"></span>
+    </div>
+  </div>
 
-</form>
+  <!-- ── Live Rates ──────────────────────────────────────────────── -->
+  <div class="card p-4">
+    <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+      <h5 class="fw-bold mb-0"><i class="bi bi-graph-up me-2 text-success"></i>Live Rates (USD Base)</h5>
+      <small class="text-muted" id="ratesLastUpdated">
+        <i class="bi bi-arrow-clockwise me-1"></i>Auto-refreshes every 60 s
+      </small>
+    </div>
+    <div class="row g-3" id="ratesContainer">
+      {% for currency, value in top_rates.items() %}
+      <div class="col-6 col-md-3">
+        <div class="card rate-card p-3 text-center" data-currency="{{ currency }}">
+          <div class="rate-flag mb-1"></div>
+          <div class="fw-semibold small">USD / {{ currency }}</div>
+          <div class="small text-muted rate-value">{{ value }}</div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
 
-{% if result %}
+</div><!-- /container -->
 
-<div class="result-box text-center mb-4">
-
-<div class="text-muted small mb-2">
-1 {{ from_currency }} = {{ rate }} {{ to_currency }}
-</div>
-
-<h2 class="fw-bold mb-0">
-{{ result }} {{ to_currency }}
-</h2>
-
-</div>
-
-{% endif %}
-
-<!-- LIVE RATES -->
-<div class="row g-3">
-
-{% for currency, value in top_rates.items() %}
-
-<div class="col-6 col-md-3">
-<div class="card rate-card p-3 text-center">
-
-<div class="fw-semibold">
-USD / {{ currency }}
-</div>
-
-<div class="small text-muted">
-{{ value }}
-</div>
-
-</div>
-</div>
-
-{% endfor %}
-
-</div>
-
-</div>
-
-</div>
-
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
 </html>

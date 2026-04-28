@@ -1,45 +1,247 @@
-body{
-font-family: Arial;
-background:#f4f4f4;
-text-align:center;
+/* ============================================================
+   Currency Converter – Main Stylesheet
+   ============================================================ */
+
+/* ── CSS Variables (light / dark) ─────────────────────────── */
+:root {
+  --bg-gradient:        linear-gradient(135deg, #201930, #6B2EFF, #1A1333);
+  --card-bg:            #ffffff;
+  --card-border:        #e9ecef;
+  --text-primary:       #212529;
+  --text-muted:         #6c757d;
+  --result-bg:          #ecfdf5;
+  --result-border:      #d1fae5;
+  --input-bg:           #ffffff;
+  --input-border:       #ced4da;
+  --rate-card-bg:       #ffffff;
+  --table-header-bg:    #f8f9fa;
+  --select2-bg:         #ffffff;
+  --select2-border:     #ced4da;
+  --select2-text:       #212529;
+  --select2-dropdown:   #ffffff;
+  --select2-hover:      #e9ecef;
+  --hr-color:           rgba(0,0,0,.1);
 }
 
-h1{
-margin-top:40px;
+[data-theme="dark"] {
+  --card-bg:            #1e1e2e;
+  --card-border:        #2d2d3f;
+  --text-primary:       #e0e0e0;
+  --text-muted:         #9a9ab0;
+  --result-bg:          #0d2b1d;
+  --result-border:      #1a4731;
+  --input-bg:           #2a2a3e;
+  --input-border:       #3d3d55;
+  --rate-card-bg:       #2a2a3e;
+  --table-header-bg:    #2a2a3e;
+  --select2-bg:         #2a2a3e;
+  --select2-border:     #3d3d55;
+  --select2-text:       #e0e0e0;
+  --select2-dropdown:   #2a2a3e;
+  --select2-hover:      #3d3d55;
+  --hr-color:           rgba(255,255,255,.1);
 }
 
-form{
-margin-top:30px;
+/* ── Base ──────────────────────────────────────────────────── */
+body {
+  min-height: 100vh;
+  background: var(--bg-gradient);
+  font-family: system-ui, -apple-system, sans-serif;
+  color: var(--text-primary);
+  transition: background 0.3s ease;
 }
 
-input,select,button{
-padding:10px;
-margin:10px;
-font-size:16px;
+/* ── Cards ─────────────────────────────────────────────────── */
+.card {
+  background: var(--card-bg);
+  border-color: var(--card-border);
+  color: var(--text-primary);
+  transition: background 0.3s ease, color 0.3s ease, border-color 0.3s ease;
 }
 
-button{
-background:#007bff;
-color:white;
-border:none;
-cursor:pointer;
+.converter-card {
+  max-width: 640px;
+  width: 100%;
+  border-radius: 18px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
 }
 
-button:hover{
-background:#0056b3;
-}
-table{
-margin:auto;
-margin-top:20px;
-border-collapse:collapse;
-}
-
-th,td{
-padding:10px 20px;
-border:1px solid #ccc;
+/* ── Inputs ────────────────────────────────────────────────── */
+.amount-input,
+.trip-input {
+  height: 52px;
+  font-size: 18px;
+  border-radius: 12px;
+  background-color: var(--input-bg);
+  border-color: var(--input-border);
+  color: var(--text-primary);
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
 }
 
-th{
-background:#007bff;
-color:white;
+.form-control,
+.form-select {
+  background-color: var(--input-bg);
+  border-color: var(--input-border);
+  color: var(--text-primary);
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+}
+
+.form-control:focus,
+.form-select:focus {
+  background-color: var(--input-bg);
+  color: var(--text-primary);
+  border-color: #198754;
+  box-shadow: 0 0 0 0.2rem rgba(25, 135, 84, 0.25);
+}
+
+.form-control::placeholder {
+  color: var(--text-muted);
+}
+
+/* ── Buttons ───────────────────────────────────────────────── */
+.convert-btn {
+  height: 52px;
+  border-radius: 12px;
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+
+.swap-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.3s ease, background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.swap-btn:hover {
+  transform: rotate(180deg);
+  background-color: #198754;
+  color: #fff;
+  border-color: #198754;
+}
+
+/* ── Result Box ────────────────────────────────────────────── */
+.result-box {
+  background: var(--result-bg);
+  border: 1px solid var(--result-border);
+  border-radius: 14px;
+  padding: 20px;
+  transition: background 0.3s ease, border-color 0.3s ease;
+}
+
+.result-amount {
+  color: #198754;
+}
+
+hr {
+  border-color: var(--hr-color);
+}
+
+/* ── Rate Cards ────────────────────────────────────────────── */
+.rate-card {
+  border-radius: 14px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  background: var(--rate-card-bg);
+  transition: transform 0.2s ease, background 0.3s ease;
+}
+
+.rate-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+}
+
+/* ── Flags ─────────────────────────────────────────────────── */
+.flag-img {
+  border-radius: 2px;
+  vertical-align: middle;
+}
+
+.select2-flag {
+  width: 20px;
+  height: 15px;
+  border-radius: 2px;
+  vertical-align: middle;
+  margin-right: 4px;
+}
+
+/* ── Select2 – dark mode overrides ────────────────────────── */
+[data-theme="dark"] .select2-container--default .select2-selection--single {
+  background-color: var(--select2-bg);
+  border-color: var(--select2-border);
+}
+
+[data-theme="dark"] .select2-container--default .select2-selection--single .select2-selection__rendered {
+  color: var(--select2-text);
+}
+
+[data-theme="dark"] .select2-container--default .select2-selection--single .select2-selection__arrow b {
+  border-color: var(--select2-text) transparent transparent;
+}
+
+[data-theme="dark"] .select2-dropdown {
+  background-color: var(--select2-dropdown);
+  border-color: var(--select2-border);
+  color: var(--select2-text);
+}
+
+[data-theme="dark"] .select2-container--default .select2-results__option {
+  color: var(--select2-text);
+}
+
+[data-theme="dark"] .select2-container--default .select2-results__option--highlighted[aria-selected] {
+  background-color: var(--select2-hover);
+  color: var(--select2-text);
+}
+
+[data-theme="dark"] .select2-search--dropdown .select2-search__field {
+  background-color: var(--input-bg);
+  border-color: var(--input-border);
+  color: var(--select2-text);
+}
+
+/* ── Table – dark mode ─────────────────────────────────────── */
+[data-theme="dark"] .table {
+  color: var(--text-primary);
+  --bs-table-bg: transparent;
+  --bs-table-striped-bg: rgba(255,255,255,.04);
+  --bs-table-hover-bg: rgba(255,255,255,.06);
+  --bs-table-border-color: var(--card-border);
+}
+
+[data-theme="dark"] .table thead th {
+  background: var(--table-header-bg);
+  color: var(--text-primary);
+  border-color: var(--card-border);
+}
+
+/* ── Text helpers – dark mode ──────────────────────────────── */
+[data-theme="dark"] .text-muted {
+  color: var(--text-muted) !important;
+}
+
+[data-theme="dark"] .alert-danger {
+  background-color: #3b1b1b;
+  border-color: #7f2d2d;
+  color: #f8b4b4;
+}
+
+/* ── Responsive ────────────────────────────────────────────── */
+@media (max-width: 576px) {
+  .converter-card {
+    border-radius: 12px;
+  }
+
+  .convert-btn {
+    font-size: 16px;
+    height: 48px;
+  }
+
+  .amount-input {
+    font-size: 16px;
+    height: 48px;
+  }
 }
