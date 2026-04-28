@@ -113,7 +113,12 @@ $(document).ready(function () {
   document.querySelectorAll(".result-flag").forEach(function (el) {
     const flagUrl = getFlagUrl(el.dataset.currency, "24x18");
     if (flagUrl) {
-      el.innerHTML = '<img src="' + flagUrl + '" class="flag-img" alt="' + el.dataset.currency + '" onerror="this.style.display=\'none\'">';
+      const img = document.createElement("img");
+      img.src       = flagUrl;
+      img.className = "flag-img";
+      img.alt       = el.dataset.currency;
+      img.onerror   = function () { this.style.display = "none"; };
+      el.appendChild(img);
     }
   });
 
@@ -122,7 +127,11 @@ $(document).ready(function () {
     const flagUrl = getFlagUrl(card.dataset.currency, "24x18");
     const flagDiv = card.querySelector(".rate-flag");
     if (flagDiv && flagUrl) {
-      flagDiv.innerHTML = '<img src="' + flagUrl + '" alt="' + card.dataset.currency + '" onerror="this.style.display=\'none\'">';
+      const img = document.createElement("img");
+      img.src     = flagUrl;
+      img.alt     = card.dataset.currency;
+      img.onerror = function () { this.style.display = "none"; };
+      flagDiv.appendChild(img);
     }
   });
 
