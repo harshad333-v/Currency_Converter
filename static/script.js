@@ -269,7 +269,7 @@ async function calculateTrip() {
 // ── Auto-refresh live rates ────────────────────────────────────
 async function refreshRates() {
   try {
-    const res  = await fetch("/api/rates?base=USD");
+    const res  = await fetch("/api/rates?base=INR");
     const data = await res.json();
     if (data.error) return; // silent failure – rates stay as server-rendered values
 
