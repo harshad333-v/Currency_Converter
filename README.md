@@ -56,11 +56,16 @@ currency-converter
 │   └── style.css
 │
 └── README.md
+
 ⚙️ Installation & Setup
+
 1️⃣ Clone the Repository
 git clone https://github.com/harshad333-v/Currency_Converter.git
+
 cd currency-converter
+
 2️⃣ Create Virtual Environment (Recommended)
+
 python -m venv venv
 
 Activate it:
